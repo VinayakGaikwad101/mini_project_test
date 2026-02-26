@@ -25,7 +25,7 @@ export default async function Home() {
           <div className="flex flex-col items-center justify-center flex-1 text-center max-w-lg">
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">
-                Welcome to Saarza MedScanner
+                Welcome to MedScript AI
               </h2>
               <p className="text-slate-600 mb-8 leading-relaxed">
                 Please sign in with your Google account to securely process and

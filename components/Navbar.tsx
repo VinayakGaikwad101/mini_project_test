@@ -39,7 +39,7 @@ export default function Navbar() {
         {/* Brand */}
         <div className="flex items-center gap-2 text-slate-900 font-bold text-xl">
           <Activity className="w-6 h-6 text-blue-600" />
-          <span>Saarza MedScanner</span>
+          <span>MedScript AI</span>
         </div>
 
         {/* Auth State */}
