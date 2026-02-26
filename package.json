@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@gradio/client": "^2.0.2",
+    "@neondatabase/serverless": "^1.0.2",
+    "better-auth": "^1.4.19",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "react": "19.2.3",
@@ -18,6 +20,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
