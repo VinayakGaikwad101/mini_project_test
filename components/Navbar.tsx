@@ -52,7 +52,7 @@ export default function Navbar() {
                 {session.user.name}
               </span>
               <img
-                src={session.user.image || ""}
+                src={session.user.image || undefined}
                 alt="Profile"
                 className="w-8 h-8 rounded-full border border-slate-200"
               />
