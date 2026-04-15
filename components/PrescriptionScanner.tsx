@@ -14,7 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-const HF_ACCESS_TOKEN = "AIzaSyCWMai0vB9lHQw9xBNHJjKqTvV0za_ZLBM";
+const HF_ACCESS_TOKEN = process.env.HF_TOKEN_KEY;
 
 const LOADING_STEPS = [
   "Handshaking with Inference Cluster (v2.4)...",
