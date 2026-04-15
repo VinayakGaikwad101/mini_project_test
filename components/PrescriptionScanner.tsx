@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 // Hugging Face Token (must be NEXT_PUBLIC_ because this is a client component)
-const HF_TOKEN = process.env.NEXT_PUBLIC_HF_TOKEN;
+const HF_TOKEN = process.env.NEXT_PUBLIC_HF_TOKEN_KEY;
 
 const LOADING_STEPS = [
   "Connecting to Hugging Face Inference Endpoint...",
