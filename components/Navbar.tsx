@@ -2,19 +2,17 @@
 
 import { useState } from "react";
 import { signIn, signOut, useSession } from "@/lib/auth-client";
-import { Activity, LogOut, LogIn, Loader2 } from "lucide-react";
+import { Activity, LogOut, LogIn, Loader2, User } from "lucide-react";
 
 export default function Navbar() {
   const { data: session, isPending } = useSession();
 
-  // Track loading states for our buttons
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const handleSignIn = async () => {
     setIsSigningIn(true);
     try {
-      // Better Auth handles the redirect natively
       await signIn.social({ provider: "google" });
     } catch (error) {
       console.error("Sign in failed:", error);
@@ -34,32 +32,51 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-slate-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         {/* Brand */}
-        <div className="flex items-center gap-2 text-slate-900 font-bold text-xl">
-          <Activity className="w-6 h-6 text-blue-600" />
-          <span>MedScript AI</span>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center">
+            <Activity className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <span className="font-semibold text-2xl tracking-tight text-slate-900">
+              MedScript
+            </span>
+            <span className="text-blue-600 font-medium">AI</span>
+          </div>
         </div>
 
-        {/* Auth State */}
-        <div>
+        {/* Auth Section */}
+        <div className="flex items-center gap-4">
           {isPending ? (
-            <div className="h-10 w-24 bg-slate-100 animate-pulse rounded-lg"></div>
+            <div className="h-10 w-28 bg-slate-100 animate-pulse rounded-full"></div>
           ) : session ? (
             <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-slate-600 hidden sm:block">
-                {session.user.name}
-              </span>
-              <img
-                src={session.user.image || undefined}
-                alt="Profile"
-                className="w-8 h-8 rounded-full border border-slate-200"
-              />
+              <div className="hidden sm:flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-slate-900">
+                    {session.user.name}
+                  </p>
+                  <p className="text-xs text-slate-500">Verified User</p>
+                </div>
+                {session.user.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="Profile"
+                    className="w-9 h-9 rounded-2xl border-2 border-white shadow-sm object-cover"
+                  />
+                ) : (
+                  <div className="w-9 h-9 bg-slate-200 rounded-2xl flex items-center justify-center">
+                    <User className="w-5 h-5 text-slate-600" />
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={handleSignOut}
                 disabled={isSigningOut}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 rounded-2xl transition-all border border-transparent hover:border-red-100 disabled:opacity-70"
               >
                 {isSigningOut ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -73,7 +90,7 @@ export default function Navbar() {
             <button
               onClick={handleSignIn}
               disabled={isSigningIn}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-900 rounded-2xl transition-all shadow-lg shadow-slate-200 active:scale-[0.985] disabled:opacity-70"
             >
               {isSigningIn ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
