@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Upload,
   FileText,
@@ -14,8 +14,8 @@ import {
   Trash2,
 } from "lucide-react";
 
-// Hugging Face Token (must be NEXT_PUBLIC_ because this is a client component)
 const HF_TOKEN = process.env.NEXT_PUBLIC_HF_TOKEN_KEY;
+const HF_SPACE_API = "https://codinggeek101-doctor-prescription-api.hf.space/run/predict";
 
 const LOADING_STEPS = [
   "Connecting to Hugging Face Inference Endpoint...",
@@ -41,6 +41,15 @@ export default function PrescriptionScanner() {
 
   const loaderInterval = useRef<NodeJS.Timeout | null>(null);
 
+  // Wake up HF Space on mount so fallback is faster
+  useEffect(() => {
+    fetch(HF_SPACE_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: ["data:image/png;base64,iVBORw0KGgo="] }),
+    }).catch(() => {});
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -56,17 +65,13 @@ export default function PrescriptionScanner() {
     setError(null);
     setLoading(false);
     stopLoadingSequence();
-
-    const fileInput = document.getElementById(
-      "file-upload",
-    ) as HTMLInputElement;
+    const fileInput = document.getElementById("file-upload") as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
 
   const startLoadingSequence = () => {
     let stepIndex = 0;
     setLoadingText(LOADING_STEPS[0]);
-
     loaderInterval.current = setInterval(() => {
       stepIndex = (stepIndex + 1) % LOADING_STEPS.length;
       setLoadingText(LOADING_STEPS[stepIndex]);
@@ -92,21 +97,54 @@ export default function PrescriptionScanner() {
     });
   };
 
+  const callGemini = async (base64Image: string, mimeType: string): Promise<string> => {
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${HF_TOKEN}`;
+    const payload = {
+      contents: [{
+        parts: [
+          {
+            text: "You are an expert pharmacist in India. Look at this handwritten doctor's prescription. Extract ONLY the names of the medicines, the dosages (like 500mg), and the instructions (like 1-0-1 or BD). Correct any spelling mistakes to the standard Indian medicine brand or generic name. Do not include any pleasantries, warnings, or markdown formatting. Just list the medicines line by line.",
+          },
+          {
+            inline_data: {
+              mime_type: mimeType,
+              data: base64Image,
+            },
+          },
+        ],
+      }],
+    };
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error(`Gemini error: ${res.status}`);
+    const data = await res.json();
+    return data.candidates[0].content.parts[0].text;
+  };
+
+  const callHFSpace = async (base64Image: string, mimeType: string): Promise<string> => {
+    const dataUrl = `data:${mimeType};base64,${base64Image}`;
+    const res = await fetch(HF_SPACE_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: [dataUrl] }),
+    });
+
+    if (!res.ok) throw new Error(`Model inference error: ${res.status}`);
+    const data = await res.json();
+    return data.data?.[0] ?? "No result returned.";
+  };
+
   const processPrescription = async () => {
-    const fileInput = document.getElementById(
-      "file-upload",
-    ) as HTMLInputElement;
+    const fileInput = document.getElementById("file-upload") as HTMLInputElement;
     const file = fileInput?.files?.[0];
 
     if (!file) {
       setError("Please select a prescription image first.");
-      return;
-    }
-
-    if (!HF_TOKEN) {
-      setError(
-        "Hugging Face Inference token is missing. Please check your environment variables.",
-      );
       return;
     }
 
@@ -116,51 +154,20 @@ export default function PrescriptionScanner() {
 
     try {
       const base64Image = await convertFileToBase64(file);
+      let extractedText = "";
 
-      // Actual Gemini call
-      const INFERENCE_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${HF_TOKEN}`;
-
-      const contextTensor =
-        "You are an expert pharmacist in India. Look at this handwritten doctor's prescription. Extract ONLY the names of the medicines, the dosages (like 500mg), and the instructions (like 1-0-1 or BD). Correct any spelling mistakes to the standard Indian medicine brand or generic name. Do not include any pleasantries, warnings, or markdown formatting. Just list the medicines line by line.";
-
-      const hfPayload = {
-        contents: [
-          {
-            parts: [
-              { text: contextTensor },
-              {
-                inline_data: {
-                  mime_type: file.type,
-                  data: base64Image,
-                },
-              },
-            ],
-          },
-        ],
-      };
-
-      const response = await fetch(INFERENCE_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(hfPayload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error?.message || `Status: ${response.status}`,
-        );
+      try {
+        // Primary: Gemini (better quality output)
+        extractedText = await callGemini(base64Image, file.type);
+      } catch {
+        // Fallback: HF Space TrOCR model
+        extractedText = await callHFSpace(base64Image, file.type);
       }
-
-      const data = await response.json();
-      const extractedText = data.candidates[0].content.parts[0].text;
 
       setResult(extractedText.trim());
     } catch (err: any) {
       console.error(err);
-      setError(`Connection failed: ${err.message}`);
+      setError("Recognition failed. Please try again or upload a clearer image.");
     } finally {
       stopLoadingSequence();
       setLoading(false);
