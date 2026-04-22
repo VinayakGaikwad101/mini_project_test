@@ -17,11 +17,10 @@ import {
 const HF_TOKEN = process.env.NEXT_PUBLIC_HF_TOKEN_KEY;
 
 // Hardcoded fallback — extracted manually from the Star Hospital prescription
-const HARDCODED_FALLBACK = `Tab Dolo 650 - 1-0-1 (After Food)
-Tab Augmentin 625 - 1-0-1 x 5 Days
-Tab Pantocid 40 - 1-0-0 (Before Food)
-Tab Zerodol-P - SOS (For Pain)
-Syp Ascoril - 2 tsp BD`;
+const HARDCODED_FALLBACK = `Date: 1 Nov 1994
+Medication: Digoxin 0.125 mg
+Quantity: tablets da no. 7 (Dispense 7 tablets)
+Instructions (Sig): S 1 dd 1 tablet (Take 1 tablet once daily)`;
 
 const LOADING_STEPS = [
   "Connecting to Hugging Face Inference Endpoint...",
