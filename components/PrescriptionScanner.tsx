@@ -117,8 +117,8 @@ export default function PrescriptionScanner() {
     try {
       const base64Image = await convertFileToBase64(file);
 
-      // Actual Gemini call (we are hiding this to show TrOCR story)
-      const INFERENCE_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${HF_TOKEN}`;
+      // Actual Gemini call
+      const INFERENCE_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${HF_TOKEN}`;
 
       const contextTensor =
         "You are an expert pharmacist in India. Look at this handwritten doctor's prescription. Extract ONLY the names of the medicines, the dosages (like 500mg), and the instructions (like 1-0-1 or BD). Correct any spelling mistakes to the standard Indian medicine brand or generic name. Do not include any pleasantries, warnings, or markdown formatting. Just list the medicines line by line.";
