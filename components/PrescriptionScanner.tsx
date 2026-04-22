@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 
 const HF_TOKEN = process.env.NEXT_PUBLIC_HF_TOKEN_KEY;
-const HF_SPACE_API = "https://codinggeek101-doctor-prescription-api.hf.space/run/predict";
+const HF_SPACE_API =
+  "https://codinggeek101-doctor-prescription-api.hf.space/api/predict";
 
 const LOADING_STEPS = [
   "Connecting to Hugging Face Inference Endpoint...",
@@ -65,7 +66,9 @@ export default function PrescriptionScanner() {
     setError(null);
     setLoading(false);
     stopLoadingSequence();
-    const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+    const fileInput = document.getElementById(
+      "file-upload",
+    ) as HTMLInputElement;
     if (fileInput) fileInput.value = "";
   };
 
@@ -97,22 +100,27 @@ export default function PrescriptionScanner() {
     });
   };
 
-  const callGemini = async (base64Image: string, mimeType: string): Promise<string> => {
+  const callGemini = async (
+    base64Image: string,
+    mimeType: string,
+  ): Promise<string> => {
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${HF_TOKEN}`;
     const payload = {
-      contents: [{
-        parts: [
-          {
-            text: "You are an expert pharmacist in India. Look at this handwritten doctor's prescription. Extract ONLY the names of the medicines, the dosages (like 500mg), and the instructions (like 1-0-1 or BD). Correct any spelling mistakes to the standard Indian medicine brand or generic name. Do not include any pleasantries, warnings, or markdown formatting. Just list the medicines line by line.",
-          },
-          {
-            inline_data: {
-              mime_type: mimeType,
-              data: base64Image,
+      contents: [
+        {
+          parts: [
+            {
+              text: "You are an expert pharmacist in India. Look at this handwritten doctor's prescription. Extract ONLY the names of the medicines, the dosages (like 500mg), and the instructions (like 1-0-1 or BD). Correct any spelling mistakes to the standard Indian medicine brand or generic name. Do not include any pleasantries, warnings, or markdown formatting. Just list the medicines line by line.",
             },
-          },
-        ],
-      }],
+            {
+              inline_data: {
+                mime_type: mimeType,
+                data: base64Image,
+              },
+            },
+          ],
+        },
+      ],
     };
 
     const res = await fetch(endpoint, {
@@ -126,7 +134,10 @@ export default function PrescriptionScanner() {
     return data.candidates[0].content.parts[0].text;
   };
 
-  const callHFSpace = async (base64Image: string, mimeType: string): Promise<string> => {
+  const callHFSpace = async (
+    base64Image: string,
+    mimeType: string,
+  ): Promise<string> => {
     const dataUrl = `data:${mimeType};base64,${base64Image}`;
     const res = await fetch(HF_SPACE_API, {
       method: "POST",
@@ -140,7 +151,9 @@ export default function PrescriptionScanner() {
   };
 
   const processPrescription = async () => {
-    const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+    const fileInput = document.getElementById(
+      "file-upload",
+    ) as HTMLInputElement;
     const file = fileInput?.files?.[0];
 
     if (!file) {
@@ -167,7 +180,9 @@ export default function PrescriptionScanner() {
       setResult(extractedText.trim());
     } catch (err: any) {
       console.error(err);
-      setError("Recognition failed. Please try again or upload a clearer image.");
+      setError(
+        "Recognition failed. Please try again or upload a clearer image.",
+      );
     } finally {
       stopLoadingSequence();
       setLoading(false);
