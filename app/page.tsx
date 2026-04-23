@@ -42,12 +42,6 @@ export default async function Home() {
                       Total Transcribed
                     </p>
                     <h2 className="text-5xl font-black italic">102</h2>
-                    <p className="text-blue-200 text-xs mt-4 flex items-center gap-1">
-                      <span className="bg-blue-500 px-1.5 py-0.5 rounded text-[10px]">
-                        ↑ 12%
-                      </span>
-                      from last month
-                    </p>
                   </div>
                   <div className="absolute -right-4 -bottom-4 text-blue-500/20 scale-150 rotate-12">
                     <svg
