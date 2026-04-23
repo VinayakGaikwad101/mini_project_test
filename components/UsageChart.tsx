@@ -23,11 +23,11 @@ ChartJS.register(
 
 export default function UsageChart() {
   const barData = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    labels: ["Mon", "Tue", "Wed", "Thu"],
     datasets: [
       {
         label: "Prescriptions",
-        data: [12, 19, 10, 15, 22, 14, 10], // Believable numbers
+        data: [12, 19, 10, 15],
         backgroundColor: "rgba(59, 130, 246, 0.8)",
         borderRadius: 6,
       },
@@ -38,7 +38,7 @@ export default function UsageChart() {
     labels: ["Completed", "Pending"],
     datasets: [
       {
-        data: [94, 8], // Sums to 102
+        data: [102, 0], // Sums to 102
         backgroundColor: ["#10b981", "#e2e8f0"],
         borderWidth: 0,
       },

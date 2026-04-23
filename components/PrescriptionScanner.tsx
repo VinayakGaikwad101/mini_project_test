@@ -277,9 +277,6 @@ export default function PrescriptionScanner() {
                 Medical Assistant
               </h3>
             </div>
-            <div className="flex items-center gap-1 text-[10px] text-slate-400 font-bold">
-              <Clock className="w-3 h-3" /> 7S LATENCY ACTIVE
-            </div>
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6">
