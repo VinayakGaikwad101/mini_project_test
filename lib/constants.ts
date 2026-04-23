@@ -1,7 +1,6 @@
 export const HF_TOKEN = process.env.NEXT_PUBLIC_HF_TOKEN_KEY;
 
-export const HARDCODED_FALLBACK = `Date: 1 Nov 1994
-Medication: Digoxin 0.125 mg
+export const HARDCODED_FALLBACK = `Medication: Digoxin 0.125 mg
 Quantity: tablets da no. 7 (Dispense 7 tablets)
 Instructions (Sig): S 1 dd 1 tablet (Take 1 tablet once daily)`;
 
