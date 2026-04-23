@@ -288,8 +288,7 @@ export default function PrescriptionScanner() {
                 <Bot className="w-4 h-4 text-blue-600" />
               </div>
               <div className="bg-slate-50 p-4 rounded-2xl rounded-tl-none text-sm text-slate-600 leading-relaxed border border-slate-100">
-                Prescription successfully digitized. You can ask me 3 follow-up
-                questions about these medications.
+                Prescription successfully digitized
               </div>
             </div>
 
